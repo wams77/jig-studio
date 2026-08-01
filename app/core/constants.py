@@ -1,0 +1,29 @@
+"""
+Global constants.
+"""
+
+APP_NAME = "JIG Studio"
+
+APP_VERSION = "2.0.0"
+
+VIDEO_WIDTH = 1080
+
+VIDEO_HEIGHT = 1920
+
+FPS = 30
+
+DEFAULT_VIDEO_DURATION = 35
+
+MAX_VIDEO_DURATION = 60
+
+DEFAULT_FONT = "Poppins"
+
+DEFAULT_LANGUAGE = "id"
+
+FACEBOOK_PLATFORM = "facebook"
+
+INSTAGRAM_PLATFORM = "instagram"
+
+YOUTUBE_PLATFORM = "youtube"
+
+TIKTOK_PLATFORM = "tiktok"
