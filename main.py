@@ -1,3 +1,4 @@
+from app.ai import StoryGenerator
 from app.bible import BibleService
 from app.media.media_service import MediaService
 
@@ -8,30 +9,56 @@ def main():
     print("JIG Studio V2")
     print("=" * 60)
 
-    bible = BibleService()
-
-    verse = bible.random()
+    verse = BibleService().random()
 
     print()
-    print("AYAT HARI INI")
-    print("--------------------------")
     print(verse.reference)
     print()
+
     print(verse.text)
     print()
 
-    service = MediaService()
+    story = StoryGenerator().generate(verse)
 
-    files = service.download_best_videos(
-        keyword="cross",
-        limit=5,
-    )
+    print("TITLE")
+    print(story["title"])
+    print()
+
+    print("HOOK")
+    print(story["hook"])
+    print()
+
+    print("KEYWORDS")
+
+    for keyword in story["keywords"]:
+        print("-", keyword)
 
     print()
-    print("VIDEO BERHASIL DIDOWNLOAD")
-    print("--------------------------")
 
-    for file in files:
+    media = MediaService()
+
+    downloaded = []
+
+    for keyword in story["keywords"]:
+
+        downloaded.extend(
+
+            media.download_best_videos(
+
+                keyword,
+
+                limit=1,
+
+            )
+
+        )
+
+    print()
+
+    print("DOWNLOAD")
+
+    for file in downloaded:
+
         print(file)
 
 
