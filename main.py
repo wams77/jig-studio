@@ -1,3 +1,4 @@
+from app.bible import BibleService
 from app.media.media_service import MediaService
 
 
@@ -7,17 +8,28 @@ def main():
     print("JIG Studio V2")
     print("=" * 60)
 
-    keyword = "cross"
+    bible = BibleService()
+
+    verse = bible.random()
+
+    print()
+    print("AYAT HARI INI")
+    print("--------------------------")
+    print(verse.reference)
+    print()
+    print(verse.text)
+    print()
 
     service = MediaService()
 
     files = service.download_best_videos(
-        keyword=keyword,
+        keyword="cross",
         limit=5,
     )
 
     print()
-    print("Download selesai\n")
+    print("VIDEO BERHASIL DIDOWNLOAD")
+    print("--------------------------")
 
     for file in files:
         print(file)
