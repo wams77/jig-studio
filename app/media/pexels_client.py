@@ -7,20 +7,20 @@ from app.core.config import settings
 
 class PexelsClient:
     """
-    Client untuk berkomunikasi dengan Pexels Video API.
+    Client untuk Pexels Video API.
     """
 
     BASE_URL = "https://api.pexels.com/videos/search"
 
     def __init__(self):
         if not settings.PEXELS_API_KEY:
-            raise ValueError("PEXELS_API_KEY belum diatur.")
+            raise RuntimeError("PEXELS_API_KEY belum diatur.")
 
         self.client = httpx.Client(
             headers={
                 "Authorization": settings.PEXELS_API_KEY
             },
-            timeout=30,
+            timeout=60,
         )
 
     def search(
@@ -29,9 +29,6 @@ class PexelsClient:
         per_page: int = 10,
         orientation: str = "portrait",
     ) -> list[dict[str, Any]]:
-        """
-        Mencari video berdasarkan keyword.
-        """
 
         response = self.client.get(
             self.BASE_URL,
@@ -44,28 +41,37 @@ class PexelsClient:
 
         response.raise_for_status()
 
-        data = response.json()
-
-        return data.get("videos", [])
+        return response.json().get("videos", [])
 
     @staticmethod
     def get_best_quality(video: dict) -> dict | None:
-        """
-        Memilih video dengan resolusi terbesar.
-        """
 
         files = video.get("video_files", [])
 
         if not files:
             return None
 
+        mp4_files = [
+            file for file in files
+            if file.get("file_type") == "video/mp4"
+        ]
+
+        if not mp4_files:
+            return None
+
         return max(
-            files,
-            key=lambda f: (
-                f.get("width", 0),
-                f.get("height", 0),
+            mp4_files,
+            key=lambda item: (
+                item.get("width", 0),
+                item.get("height", 0),
             ),
         )
 
     def close(self):
         self.client.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
