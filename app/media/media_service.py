@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.media.downloader import Downloader
 from app.media.pexels_client import PexelsClient
 
@@ -14,29 +16,33 @@ class MediaService:
         self,
         keyword: str,
         limit: int = 5,
-    ):
+    ) -> list[Path]:
+
+        downloaded: list[Path] = []
 
         videos = self.client.search(
             query=keyword,
             per_page=limit,
         )
 
-        downloaded = []
-
         for video in videos:
 
             best = self.client.get_best_quality(video)
 
-            if not best:
+            if best is None:
                 continue
+
+            url = best["link"]
 
             filename = f"{video['id']}.mp4"
 
             path = self.downloader.download(
-                best["link"],
-                filename,
+                url=url,
+                filename=filename,
             )
 
             downloaded.append(path)
+
+        self.client.close()
 
         return downloaded
